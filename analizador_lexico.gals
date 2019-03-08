@@ -1,0 +1,65 @@
+#Options
+GenerateScanner = true
+GenerateParser = false
+Language = Java
+ScannerName = Lexico
+ScannerCaseSensitive = true
+ScannerTable = Compact
+Input = String
+#RegularDefinitions
+
+#Tokens
+:[\n\t\b\s]
+
+SE : [se]
+ENTAO : [entao]
+SENAO : [senao]
+END : [end]
+INT : [int]
+FLOAT : [float]
+CHAR : [char]
+STRING : [String]
+
+
+MAIS : [+]
+MENOS : [-]
+
+MAIOR : [>]
+MENOR : [<]
+MENOR_IGUAL : [>=]
+MENOR_IGUAL : [<=]
+IGUAL_IGUAL : [==]
+NOT_IGUAL : [!=]
+
+OR_OR : [&&]
+AND_AND : [||]
+NOT : [!]
+
+SHIFT_LEFT : [>>]
+SHIFT_RIGHT : [<<]
+OR : [&]
+AND : [|]
+ : [~]
+ : [^]
+
+VAR_NAME : [a-zA-Z][a-zA-Z_$0-9]*
+METHOD_NAME : [a-zA-Z][a-zA-Z0-9]*
+CLASS_NAME : [A-Z][a-zA-Z0-9]*
+
+DECIMAL : (?:0|[1-9][0-9]*)\.[0-9]+
+BINARY : [0-1]*
+HEXADECIMAL : [0-1A-F]*
+CHAR : [.]
+STRING : [.]*
+DOUBLE :
+
+COMMENT_LINE : [//].* 
+COMMENT_BLOCK : (\/\*).*(\*\/)
+
+DOT : [\.]
+SEMICOLON : [\;]
+DOT_DOT : [\:]
+LEFT_BRACKET [\[]
+RIGHT_BRACKET [\]]
+
+
