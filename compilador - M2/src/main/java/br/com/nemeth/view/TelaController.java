@@ -49,27 +49,6 @@ public class TelaController {
 	@FXML
 	void compilar(ActionEvent event) {
 		executar(textInput.getText());
-		// ANTLRInputStream ais = new ANTLRInputStream(new String(textInput.getText()));
-		// LinguagemLexer lexer = new LinguagemLexer(ais);
-		// CommonTokenStream stream = new CommonTokenStream(lexer);
-		// LinguagemParser parser = new LinguagemParser(stream);
-		//
-		// TratadorErrosLexico tratadorErrosLexico = new TratadorErrosLexico(textLog);
-		// TratadorErrosSintatico tratadorErrosSintatico = new
-		// TratadorErrosSintatico(textLog);
-		//
-		// // Remove o tratador de erros padrão do lexer e do parser
-		// lexer.removeErrorListeners();
-		// parser.removeErrorListeners();
-		//
-		// // Instala o tratador de erros personalizado que irá exibir as mensagens
-		// // em tela na JList
-		// lexer.addErrorListener(tratadorErrosLexico);
-		// parser.addErrorListener(tratadorErrosSintatico);
-		//
-		// // Chama a regar inicial do parser, esta regra deve estar definida na
-		// gramática
-		// parser.inicio();
 	}
 
 	private void executar(String texto) {
