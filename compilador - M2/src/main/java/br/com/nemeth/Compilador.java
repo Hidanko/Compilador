@@ -4,9 +4,6 @@ import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -16,7 +13,6 @@ import javafx.stage.Stage;
 
 public class Compilador extends Application {
 	private static GridPane janelaPrincipal;
-	private static Logger logger = LoggerFactory.getLogger(Compilador.class);
 
 	public static void main(String[] args) {
 
@@ -33,7 +29,6 @@ public class Compilador extends Application {
 			janelaPrincipal = loader.<GridPane>load();
 		} catch (IOException e1) {
 			JOptionPane.showMessageDialog(null, "Falha ao carregar interface da aplica��o");
-			logger.error("Falha ao carregar JavaFX", e1);
 		}
 		Scene scene = new Scene(janelaPrincipal);
 		scene.getStylesheets().add(getClass().getClassLoader().getResource("css/bootstrap.css").toExternalForm());

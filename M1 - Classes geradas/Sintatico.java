@@ -1,4 +1,4 @@
-package br.com.nemeth.gals;
+package executargramatica;
 
 import java.util.Stack;
 

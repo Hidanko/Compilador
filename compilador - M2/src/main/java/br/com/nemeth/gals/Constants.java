@@ -61,11 +61,10 @@ public interface Constants extends ScannerConstants, ParserConstants
     int t_MAIN = 55;
     int t_READ = 56;
     int t_WRITE = 57;
-    int t_RETURN = 58;
-    int t_DEL_PT = 59;
-    int t_DEL_VG = 60;
-    int t_DEL_PV = 61;
-    int t_DEL_DP = 62;
-    int t_ATRIBUICAO = 63;
+    int t_DEL_PT = 58;
+    int t_DEL_VG = 59;
+    int t_DEL_PV = 60;
+    int t_DEL_DP = 61;
+    int t_ATRIBUICAO = 62;
 
 }

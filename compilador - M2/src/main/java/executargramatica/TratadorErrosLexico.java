@@ -1,6 +1,5 @@
 package executargramatica;
 
-import java.awt.TextArea;
 import java.util.BitSet;
 
 import org.antlr.v4.runtime.ANTLRErrorListener;

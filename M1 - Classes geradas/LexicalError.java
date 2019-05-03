@@ -1,4 +1,4 @@
-package br.com.nemeth.gals;
+package executargramatica;
 
 public class LexicalError extends AnalysisError
 {

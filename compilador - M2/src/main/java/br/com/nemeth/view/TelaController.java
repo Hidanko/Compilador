@@ -3,7 +3,6 @@ package br.com.nemeth.view;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,10 +17,16 @@ import br.com.nemeth.gals.Sintatico;
 import br.com.nemeth.gals.SyntaticError;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 public class TelaController {
 
@@ -31,6 +36,8 @@ public class TelaController {
 	@FXML
 	private Button buttonCompilar;
 
+	@FXML
+	private Button buttonTabela;
 	@FXML
 	private Label labelStatus;
 
@@ -42,6 +49,7 @@ public class TelaController {
 
 	@FXML
 	private TextArea textOutput;
+	private static Pane janela;
 
 	/*
 	 * A��o ao pressionar o bot�o Compilar
@@ -54,10 +62,10 @@ public class TelaController {
 	private void executar(String texto) {
 		System.out.println(texto);
 		textLog.setText("");
-
+		textOutput.setText("");
 		Lexico lex = new Lexico();
 		Sintatico sin = new Sintatico();
-		Semantico sem = new Semantico();
+		Semantico sem = new Semantico(this);
 
 		lex.setInput(texto);
 
@@ -134,5 +142,31 @@ public class TelaController {
 			executar(sb.toString());
 		}
 
+//		loader.setLocation(Compilador.class.getResource("view/tabela/tabela.fxml"));
+	}
+
+	@FXML
+	void abrirTabela(ActionEvent event) throws Exception {
+
+//		Parent root = FXMLLoader.load(TelaController.class.getResource("view/tabela/tabela.fxml"));
+
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("tabela/tabela.fxml"));
+		System.out.println(fxmlLoader.getLocation().getPath());
+		Parent root1 = (Parent) fxmlLoader.load();
+		Stage stage = new Stage();
+		stage.setScene(new Scene(root1));
+		stage.getScene().getStylesheets()
+				.add(getClass().getClassLoader().getResource("css/bootstrap.css").toExternalForm());
+		stage.getIcons().add(new Image(ClassLoader.getSystemResourceAsStream("images/icone.png")));
+		stage.setResizable(false);
+		stage.show();
+	}
+
+	public void inserirToken(String token) {
+		try {
+			textOutput.setText(textOutput.getText() + "\n" + token);
+		} catch (Exception e) {
+			System.out.println("null");
+		}
 	}
 }
