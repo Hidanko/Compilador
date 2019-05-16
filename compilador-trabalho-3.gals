@@ -1,0 +1,186 @@
+#Options
+GenerateScanner = true
+GenerateParser = true
+Language = Java
+ScannerName = Lexico
+ParserName = Sintatico
+SemanticName = Semantico
+Package = br.com.nemeth.gals
+ScannerCaseSensitive = true
+ScannerTable = Compact
+Input = String
+Parser = SLR
+#RegularDefinitions
+
+#Tokens
+
+ID: [_$@a-zA-Z][_$@a-zA-Z0-9]*
+
+CONST_INT: [0-9]+
+CONST_DOUBLE: [0-9]+["."][0-9]+
+CONST_CHAR: "'"[a-zA-Z0-9]"'"
+CONST_STR: \"[a-zA-Z0-9\s]*\"
+CONST_HEX: 0x[A-F0-9]+
+CONST_BIN: 0b[0-1]+
+
+BB_RS: ["<"]["<"]
+BB_LS: [">"][">"]
+BB_E: ["&"]
+BB_OU: ["|"]
+BB_NOT: ["~"]
+BB_XOR: ["^"]
+
+OP_SOMA: ["+"]
+OP_SUBT: ["-"]
+OP_MULT: ["*"]
+OP_DIV: ["/"]
+OP_MOD: ["%"]
+OP_INCR: ["+"]["+"]
+OP_DECR: ["-"]["-"]
+
+RL_GT: [">"]
+RL_LT: ["<"]
+RL_GE: [">"]["="]
+RL_LE: ["<"]["="]
+RL_EQ: ["="]["="]
+RL_NE: ["!"]["="]
+
+LQ_ND: ["&"]["&"]
+LQ_OR: ["|"]["|"]
+LQ_NT: ["!"]
+
+
+SLINE_CM: ["\/"]["\/"][a-zA-Z0-9\s]*
+MLINE_CM: ["/"]["*"][a-zA-Z0-9\s\n]*["*"]["/"]
+
+ABRE_PARENTESES: "("
+FECHA_PARENTESES: ")"
+
+ABRE_COLCHETE: "["
+FECHA_COLCHETE: "]"
+
+ABRE_CHAVE: "{"
+FECHA_CHAVE: "}"
+
+IF = ID : "if"
+ELSE = ID : "else"
+ELSE_IF = ID : "elseif"
+
+DO = ID : "do"
+WHILE = ID : "while"
+FOR = ID: "for"
+
+
+PROGRAM = ID : "prog"
+DOUBLE = ID : "double"
+INT = ID : "int"
+STRING = ID : "string"
+CHAR = ID : "char"
+FUNCTION = ID : "function"
+BEGIN = ID : "begin"
+END = ID : "end"
+CONST = ID : "const"
+LET = ID : "let"
+READ = ID : "read"
+WRITE = ID : "write"
+
+DEL_PT: ["."]
+DEL_VG: [","]
+DEL_PV: [";"]
+DEL_DP: [":"]
+ATRIBUICAO: ["="]
+
+
+:[\n\s\t\b]
+
+#NonTerminals
+
+<prog>
+<escopo>
+<cmd_l>
+<cmd>
+<dec>
+<dec_n>
+<dec_v>
+<type>
+<inicio_b>
+<fim_b>
+<cond>
+<senao>
+<se>
+<init>
+<while>
+<dowhile>
+<for>
+<exp>
+<exp1>
+<exp2>
+<exp3>
+<exp4>
+<exp5>
+<exp6>
+<exp7>
+<exp8>
+<exp9>
+<exp10>
+<op_rel>
+<op_neg>
+<op_bitwise>
+<op_arit_baixa>
+<op_arit_alta>
+<op_arit_mais_alta>
+<numeric_val>
+<op>
+<params>
+<params2>
+<atrib>
+<func>
+<cfunc>
+<read>
+<write>
+<vet>
+#Grammar
+<prog> ::= PROGRAM <escopo>;
+
+<escopo> ::= ABRE_CHAVE <cmd_l> FECHA_CHAVE#7 | ABRE_CHAVE FECHA_CHAVE#7;
+
+<cmd_l> ::= <cmd> | <cmd_l> <cmd> ;
+<cmd> ::= <dec> | <se> | <while> | <dowhile> | <for> | <atrib> |  <read> | <write> | <func> | <cfunc> ;
+
+<read> ::= READ ABRE_PARENTESES ID#9 FECHA_PARENTESES DEL_PV;
+<write> ::= WRITE ABRE_PARENTESES <exp> FECHA_PARENTESES DEL_PV;
+<func> ::= <type>#1 FUNCTION ID#4 ABRE_PARENTESES <params> FECHA_PARENTESES#6 <escopo> |<type>#1 FUNCTION ID#4 ABRE_PARENTESES FECHA_PARENTESES <escopo>;
+<cfunc> ::= ID#11 ABRE_PARENTESES <params2> FECHA_PARENTESES DEL_PV | ID#11 ABRE_PARENTESES FECHA_PARENTESES DEL_PV;
+<atrib> ::= ID#9 ATRIBUICAO <exp> DEL_PV;
+<dec> ::= <type>#1 <dec_n> DEL_PV;
+<params> ::= <type>#1 ID#5 | <type>#1 ID#5 DEL_VG <params>;
+<params2> ::= ID#10 | ID#10 DEL_VG <params2>;
+<dec_n> ::= <dec_v> | <dec_v> DEL_VG <dec_n>;
+<dec_v> ::= ID#2 | <vet>;
+<vet> ::= ID#3 ABRE_COLCHETE <exp> FECHA_COLCHETE | ID#3 ABRE_COLCHETE FECHA_COLCHETE;
+<se> ::= IF#8 ABRE_PARENTESES <exp> FECHA_PARENTESES <escopo> | IF#8 ABRE_PARENTESES <exp> FECHA_PARENTESES <escopo> ELSE#8 <escopo>;
+<while> ::= WHILE#8 ABRE_PARENTESES <exp> FECHA_PARENTESES <escopo>;
+<dowhile> ::= DO#8 <escopo> WHILE ABRE_PARENTESES <exp> FECHA_PARENTESES;
+<for> ::= FOR#8 ABRE_PARENTESES <init> DEL_PV <exp> DEL_PV ID ATRIBUICAO <exp> FECHA_PARENTESES <escopo>;
+
+<init> ::= ID#9 ATRIBUICAO <exp> | <type>#1 ID#2#9 ATRIBUICAO <exp>;
+
+<exp>  ::= <exp> LQ_OR <exp1> | <exp1>;
+<exp1> ::= <exp1> LQ_ND <exp2> | <exp2>;
+<exp2> ::= <exp2> BB_OU <exp3> | <exp3>;
+<exp3> ::= <exp3> BB_XOR <exp4> | <exp4>;
+<exp4> ::= <exp4> BB_E <exp5> | <exp5>;
+<exp5> ::= <exp5> <op_rel> <exp6> | <exp6>;
+<exp6> ::= <exp6> <op_bitwise> <exp7> | <exp7>;
+<exp7> ::= <exp7> <op_arit_baixa> <exp8> | <exp8>;
+<exp8> ::= <exp8> <op_arit_alta> <exp9> | <exp9> ;
+<exp9> ::= <op_neg> <exp10> | <exp10>;
+<exp10> ::= CONST_INT | CONST_DOUBLE | CONST_STR | CONST_HEX | CONST_BIN  | CONST_CHAR | ID#10 | ABRE_PARENTESES <exp> FECHA_PARENTESES;
+<op_rel> ::= RL_GT | RL_LT | RL_GE | RL_LE | RL_EQ | RL_NE; 
+<op_neg> ::= OP_SUBT | BB_NOT | LQ_NT;
+<op_bitwise> ::= BB_RS | BB_LS;
+<op_arit_baixa> ::= OP_SOMA | OP_SUBT;
+<op_arit_alta> ::= OP_MULT | OP_DIV | OP_MOD;
+
+<type> ::= INT | DOUBLE | STRING | CHAR;
+<numeric_val> ::= CONST_DOUBLE | CONST_INT;
