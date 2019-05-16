@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 
@@ -14,7 +16,9 @@ import br.com.nemeth.gals.Lexico;
 import br.com.nemeth.gals.SemanticError;
 import br.com.nemeth.gals.Semantico;
 import br.com.nemeth.gals.Sintatico;
+import br.com.nemeth.gals.Symbol;
 import br.com.nemeth.gals.SyntaticError;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,9 +26,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -49,7 +55,54 @@ public class TelaController {
 
 	@FXML
 	private TextArea textOutput;
-	private static Pane janela;
+
+	@FXML
+	private TableView<Symbol> tabVariaveis;
+
+	@FXML
+	private TableColumn<Symbol, String> tabId;
+
+	@FXML
+	private TableColumn<Symbol, String> tabTipo;
+
+	@FXML
+	private TableColumn<Symbol, String> tabIni;
+
+	@FXML
+	private TableColumn<Symbol, String> tabUsada;
+
+	@FXML
+	private TableColumn<Symbol, String> tabEscopo;
+
+	@FXML
+	private TableColumn<Symbol, String> tabParam;
+
+	@FXML
+	private TableColumn<Symbol, String> tabPos;
+
+	@FXML
+	private TableColumn<Symbol, String> tabVet;
+
+	@FXML
+	private TableColumn<Symbol, String> tabFunc;
+
+	private List<Symbol> variaveis = new ArrayList<Symbol>();
+
+	@FXML
+	public void initialize() {
+
+		tabId.setCellValueFactory(new PropertyValueFactory<Symbol, String>("id"));
+		tabTipo.setCellValueFactory(new PropertyValueFactory<Symbol, String>("tipo"));
+		tabIni.setCellValueFactory(new PropertyValueFactory<Symbol, String>("ini"));
+		tabUsada.setCellValueFactory(new PropertyValueFactory<Symbol, String>("usada"));
+		tabEscopo.setCellValueFactory(new PropertyValueFactory<Symbol, String>("escopo"));
+		tabParam.setCellValueFactory(new PropertyValueFactory<Symbol, String>("param"));
+		tabPos.setCellValueFactory(new PropertyValueFactory<Symbol, String>("pos"));
+		tabVet.setCellValueFactory(new PropertyValueFactory<Symbol, String>("vet"));
+		tabFunc.setCellValueFactory(new PropertyValueFactory<Symbol, String>("func"));
+
+		tabVariaveis.setEditable(false);
+	}
 
 	/*
 	 * A��o ao pressionar o bot�o Compilar
@@ -60,6 +113,8 @@ public class TelaController {
 	}
 
 	private void executar(String texto) {
+		variaveis.clear();
+		tabVariaveis.setItems(FXCollections.observableArrayList(variaveis));
 		System.out.println(texto);
 		textLog.setText("");
 		textOutput.setText("");
@@ -140,6 +195,7 @@ public class TelaController {
 				line = buf.readLine();
 			}
 			executar(sb.toString());
+			buf.close();
 		}
 
 //		loader.setLocation(Compilador.class.getResource("view/tabela/tabela.fxml"));
@@ -169,4 +225,21 @@ public class TelaController {
 			System.out.println("null");
 		}
 	}
+
+	public void adicionarSymbol(Symbol s, String escopo) {
+		boolean achou = false;
+		for (int i = 0; i < variaveis.size(); i++) {
+			if (variaveis.get(i).getId().equals(s.getId()) && variaveis.get(i).getEscopo().equals(escopo)) {
+				achou = true;
+				variaveis.set(i, s);
+			}
+		}
+		
+		if (!achou) {
+			variaveis.add(s);
+		}
+		
+		tabVariaveis.setItems(FXCollections.observableArrayList(variaveis));
+	}
+
 }

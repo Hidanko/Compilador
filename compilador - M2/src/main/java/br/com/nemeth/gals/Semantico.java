@@ -23,67 +23,102 @@ public class Semantico implements Constants {
 		this.tela = tela;
 	}
 
+	private void validarSeFoiInstanciado(Token token) {
+		boolean flag = true;
+		for (Symbol s : tabela) {
+			if (token.getLexeme() == s.getId() && s.getEscopo().equals(escopos.peek())) {
+				flag = false;
+			}
+		}
+		if (flag) {
+			System.out.println(token.getLexeme() + " utilizado sem estar instanciado");
+		}
+		
+	}
+
 	public void executeAction(int action, Token token) throws SemanticError {
-		String tk = "Action " + action + " -> " + token.getLexeme();
-//		tela.inserirToken(tk);
 		switch (action) {
 		/**
 		 * case 1 até 8 trata do escopo e da inserção dos simbolos nas tabelas
 		 */
-		case 1: // pega o tipo da variável/vetor/função/parametro na declaração para logo após
-				// inserir
+		// pega o tipo da vari�vel/vetor/fun��o/parametro na declara��o para logo ap�s
+		// inserir
+		case 1:
 			tipo = token.getLexeme();
+			break;
+		case 2: // insere uma vari�vel na tabela
+			if (escopos.size() > 1) {
+				if (!inserirTabela(
+						
+					
+						new Symbol(token.getLexeme(), tipo, false, false, escopos.peek(), false, 0, false, false)))
+					// tela.inserirToken("vari�vel " + token.getLexeme() + " inserida com sucesso");
+					// else
+					validarSeFoiInstanciado(token);
+				//tela.inserirToken("vari�vel " + token.getLexeme() + " ja existe");
+			} else
+				tela.inserirToken("vari�vel " + token.getLexeme() + " n�o pode ser declarada fora de fun��o");
 
 			break;
-		case 2: // insere uma variável na tabela
-			if (inserirTabela(
-					new Symbol(token.getLexeme(), tipo, false, false, escopos.peek(), false, 0, false, false)))
-				tela.inserirToken("variável " + token.getLexeme() + " inserida com sucesso");
-			else
-				tela.inserirToken("variável " + token.getLexeme() + " já existe");
-			break;
 		case 3: // insere um vetor na tabela
-			if (inserirTabela(new Symbol(token.getLexeme(), tipo, false, false, escopos.peek(), false, 0, true, false)))
-				tela.inserirToken("vetor " + token.getLexeme() + " inserido com sucesso");
-			else
-				tela.inserirToken("vetor " + token.getLexeme() + " já existe");
-			break;
-		case 4: // insere uma função na tabela e muda o escopo atual caso a inserção tenha
-				// sucesso;
-			if (inserirTabela(
-					new Symbol(token.getLexeme(), tipo, false, false, escopos.peek(), false, 0, false, true))) {
-				escopos.push(token.getLexeme());
-				tela.inserirToken("funcao " + token.getLexeme() + " foi inserida com sucesso");
+			if (escopos.size() > 1) {
+				if (!inserirTabela(
+						new Symbol(token.getLexeme(), tipo, false, false, escopos.peek(), false, 0, true, false)))
+					// tela.inserirToken("vetor " + token.getLexeme() + " inserido com sucesso");
+					// else
+					validarSeFoiInstanciado(token);
+				//tela.inserirToken("vetor " + token.getLexeme() + " j� existe");
 			} else
-				tela.inserirToken("funcao " + token.getLexeme() + " já existe");
+				tela.inserirToken("vetor " + token.getLexeme() + " n�o pode ser declarada fora de fun��o");
 			break;
-		case 5: // inseri um parametro de função na tabela obs: adicionei <type> antes da função
-				// e mudei a regra de produção <param> na gramatica para facilitar a inserção na
+		case 4: // insere uma fun��o na tabela e muda o escopo atual caso a inser��o tenha
+				// sucesso;
+			if (escopos.peek().equals("global")) {
+				if (inserirTabela(
+						new Symbol(token.getLexeme(), tipo, false, false, escopos.peek(), false, 0, false, true))) {
+					escopos.push(token.getLexeme());
+					// tela.inserirToken("funcao " + token.getLexeme() + " foi inserida com
+					// sucesso");
+				} else
+					tela.inserirToken("funcao " + token.getLexeme() + " j� existe");
+			} else
+				tela.inserirToken("fun��o s� pode ser declarada em escopo global");
+			break;
+
+		// inseri um parametro de fun��o na tabela obs: adicionei <type> antes da fun��o
+		case 5: // e mudei a regra de produ��o <param> na gramatica para facilitar a inser��o na
 				// tabela;
-			if (inserirTabela(
-					new Symbol(token.getLexeme(), tipo, false, false, escopos.peek(), true, ++param, false, false)))
-				tela.inserirToken("parametro " + token.getLexeme() + " foi inserido com sucesso");
-			else
-				tela.inserirToken("parametro " + token.getLexeme() + " já existe");
+			if (!inserirTabela(
+					new Symbol(token.getLexeme(), tipo, true, false, escopos.peek(), true, ++param, false, false)))
+				// tela.inserirToken("parametro " + token.getLexeme() + " foi inserido com
+				// sucesso");
+				// else
+				tela.inserirToken("parametro " + token.getLexeme() + " j� existe");
 			break;
 		case 6: // quando fechar os parenteses dos parametros da função, zera o contador da
 				// posição do parametro
+			validarSeFoiInstanciado(token);
 			param = 0;
 			break;
 		case 7: // quando fecha chaves, atualiza o escopo;
 			for (Symbol simbolo : tabela) {
-				if (!simbolo.isUsada() && simbolo.getEscopo().equals(escopos.peek())) {
-					tela.inserirToken("WARN - "+simbolo.getId()+" nao usado");
+				if (!simbolo.isUsada() && simbolo.getEscopo().equals(escopos.peek())
+						&& !simbolo.getId().equals("main")) {
+					tela.inserirToken("WARN - " + simbolo.getId() + " nao usado");
 				}
 			}
-			
+
 			escopos.pop();
 			break;
 		case 8: // muda o escopo para desvio condicional e laços de repetição
 				// adicionei o scope counter pra diferenciar o nome, porque no caso de existirem
 				// desvios condicionais ou
 				// laços de repetição aninhados, o nome do escopo não muda;
-			escopos.push("scope" + scopeCounter++);
+			if (escopos.size() > 1)
+				escopos.push("scope " + scopeCounter++);
+			else
+				escopos.push("");
+			tela.inserirToken(token.getLexeme() + " n�o pode ser usado fora de fun��o");
 			break;
 
 		/**
@@ -91,24 +126,41 @@ public class Semantico implements Constants {
 		 */
 		case 9: // verifica se uma variável sendo utilizada já foi declarada, e seta ela como
 				// inicializada;
-			if (buscaIdEscopo(action, token.getLexeme()))
-				tela.inserirToken("var " + token.getLexeme() + " existe e foi setada como inicializada");
-			else
-				tela.inserirToken("Aviso! variável " + token.getLexeme() + " não foi declarada");
+			if (escopos.size() > 1) {
+				if (!buscaIdEscopo(action, token.getLexeme()))
+					// tela.inserirToken("var " + token.getLexeme() + " existe e foi setada como
+					// inicializada");
+					// else
+					tela.inserirToken("Aviso! vari�vel " + token.getLexeme() + " n�o foi declarada");
+			} else
+				tela.inserirToken("express�es e atribui��es n�o podem ocorrer fora de fun��o");
+
 			break;
 		case 10: // verifica se uma variável sendo utilizada já foi declarada e seta ela como
 					// usada;
-			if (buscaIdEscopo(action, token.getLexeme()))
-				tela.inserirToken("var " + token.getLexeme() + " existe e foi setada como usada");
-			else
-				tela.inserirToken("Aviso! variável " + token.getLexeme() + " não foi declarada");
+			if (escopos.size() > 1) {
+				if (!buscaIdEscopo(action, token.getLexeme()))
+
+					// tela.inserirToken("var " + token.getLexeme() + " existe e foi setada como
+					// usada");
+					// else
+					tela.inserirToken("Aviso! vari�vel " + token.getLexeme() + " n�o foi declarada");
+			} else
+				tela.inserirToken("express�es e atribui��es n�o podem ocorrer fora de fun��o");
+
 			break;
-		case 11:
-			if (buscaIdEscopo(action, token.getLexeme()))
-				tela.inserirToken("Função " + token.getLexeme() + " existe e foi setada como usada");
-			else
-				tela.inserirToken("Aviso! função " + token.getLexeme() + " não foi declarada");
+		case 11: // checa se uma fun��o sendo utilizada j� foi declarada;
+			if (!buscaIdEscopo(action, token.getLexeme()))
+				// tela.inserirToken("Fun��o " + token.getLexeme() + " existe e foi setada como
+				// usada");
+				// else
+				tela.inserirToken("Aviso! fun��o " + token.getLexeme() + " n�o foi declarada");
+			break;
 		}
+		for (Symbol simbolo : tabela) {
+			simbolo.printSymbol();
+		}
+		System.out.println("\n\n");
 	}
 
 	/**
@@ -131,7 +183,8 @@ public class Semantico implements Constants {
 
 		if (!flag) {
 			tabela.add(novoSimbolo);
-			novoSimbolo.printSymbol();
+			// novoSimbolo.printSymbol();
+			tela.adicionarSymbol(novoSimbolo, escopos.peek());
 
 			return true;
 		} else {
@@ -153,6 +206,8 @@ public class Semantico implements Constants {
 						simbolo.setIni(true);
 					else if (action == 10)
 						simbolo.setUsada(true);
+						if(simbolo.isIni() != true)
+							tela.inserirToken(id + " esta sendo utilizado sem ser inicializado");
 
 					return true;
 
