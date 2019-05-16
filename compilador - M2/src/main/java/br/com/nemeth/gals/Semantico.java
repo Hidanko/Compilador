@@ -13,6 +13,7 @@ public class Semantico implements Constants {
 	int param;
 	int scopeCounter;
 	TelaController tela;
+	TipoContexto tipoContexto;
 
 	public Semantico(TelaController tela) {
 		this.param = 0;
@@ -33,7 +34,7 @@ public class Semantico implements Constants {
 		if (flag) {
 			System.out.println(token.getLexeme() + " utilizado sem estar instanciado");
 		}
-		
+
 	}
 
 	public void executeAction(int action, Token token) throws SemanticError {
@@ -45,17 +46,14 @@ public class Semantico implements Constants {
 		// inserir
 		case 1:
 			tipo = token.getLexeme();
+			tipoContexto = TipoContexto.FUNCAO;
 			break;
 		case 2: // insere uma vari�vel na tabela
 			if (escopos.size() > 1) {
-				if (!inserirTabela(
-						
+				if (!inserirTabela(new Symbol(token.getLexeme(), tipo, false, false, escopos.peek(), false, 0, false, false)))
 					
-						new Symbol(token.getLexeme(), tipo, false, false, escopos.peek(), false, 0, false, false)))
-					// tela.inserirToken("vari�vel " + token.getLexeme() + " inserida com sucesso");
-					// else
 					validarSeFoiInstanciado(token);
-				//tela.inserirToken("vari�vel " + token.getLexeme() + " ja existe");
+				// tela.inserirToken("vari�vel " + token.getLexeme() + " ja existe");
 			} else
 				tela.inserirToken("vari�vel " + token.getLexeme() + " n�o pode ser declarada fora de fun��o");
 
@@ -67,7 +65,7 @@ public class Semantico implements Constants {
 					// tela.inserirToken("vetor " + token.getLexeme() + " inserido com sucesso");
 					// else
 					validarSeFoiInstanciado(token);
-				//tela.inserirToken("vetor " + token.getLexeme() + " j� existe");
+				// tela.inserirToken("vetor " + token.getLexeme() + " j� existe");
 			} else
 				tela.inserirToken("vetor " + token.getLexeme() + " n�o pode ser declarada fora de fun��o");
 			break;
@@ -156,6 +154,10 @@ public class Semantico implements Constants {
 				// else
 				tela.inserirToken("Aviso! fun��o " + token.getLexeme() + " n�o foi declarada");
 			break;
+
+		case 15:
+			// fecha contexto
+			break;
 		}
 		for (Symbol simbolo : tabela) {
 			simbolo.printSymbol();
@@ -206,8 +208,8 @@ public class Semantico implements Constants {
 						simbolo.setIni(true);
 					else if (action == 10)
 						simbolo.setUsada(true);
-						if(simbolo.isIni() != true)
-							tela.inserirToken(id + " esta sendo utilizado sem ser inicializado");
+					if (simbolo.isIni() != true)
+						tela.inserirToken(id + " esta sendo utilizado sem ser inicializado");
 
 					return true;
 
@@ -224,4 +226,5 @@ public class Semantico implements Constants {
 		return false;
 	}
 }
-//tabela.add(new Symbol(token.getLexeme(), tipo, true, tipo, true, GO_TO, true, true));
+// tabela.add(new Symbol(token.getLexeme(), tipo, true, tipo, true, GO_TO, true,
+// true));
