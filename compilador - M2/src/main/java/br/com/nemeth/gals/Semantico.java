@@ -24,19 +24,6 @@ public class Semantico implements Constants {
 		this.tela = tela;
 	}
 
-	private void validarSeFoiInstanciado(Token token) {
-		boolean flag = true;
-		for (Symbol s : tabela) {
-			if (token.getLexeme() == s.getId() && s.getEscopo().equals(escopos.peek())) {
-				flag = false;
-			}
-		}
-		if (flag) {
-			System.out.println(token.getLexeme() + " utilizado sem estar instanciado");
-		}
-
-	}
-
 	public void executeAction(int action, Token token) throws SemanticError {
 		switch (action) {
 		/**
@@ -50,9 +37,10 @@ public class Semantico implements Constants {
 			break;
 		case 2: // insere uma vari�vel na tabela
 			if (escopos.size() > 1) {
-				if (!inserirTabela(new Symbol(token.getLexeme(), tipo, false, false, escopos.peek(), false, 0, false, false)))
-					
-					validarSeFoiInstanciado(token);
+				if (!inserirTabela(
+						new Symbol(token.getLexeme(), tipo, false, false, escopos.peek(), false, 0, false, false)))
+					tipoContexto = TipoContexto.INICIALIZACAO;
+				dizerSeFoiInstanciado(token);
 				// tela.inserirToken("vari�vel " + token.getLexeme() + " ja existe");
 			} else
 				tela.inserirToken("vari�vel " + token.getLexeme() + " n�o pode ser declarada fora de fun��o");
@@ -62,9 +50,8 @@ public class Semantico implements Constants {
 			if (escopos.size() > 1) {
 				if (!inserirTabela(
 						new Symbol(token.getLexeme(), tipo, false, false, escopos.peek(), false, 0, true, false)))
-					// tela.inserirToken("vetor " + token.getLexeme() + " inserido com sucesso");
-					// else
-					validarSeFoiInstanciado(token);
+					tipoContexto = TipoContexto.INICIALIZACAO;
+				dizerSeFoiInstanciado(token);
 				// tela.inserirToken("vetor " + token.getLexeme() + " j� existe");
 			} else
 				tela.inserirToken("vetor " + token.getLexeme() + " n�o pode ser declarada fora de fun��o");
@@ -95,7 +82,7 @@ public class Semantico implements Constants {
 			break;
 		case 6: // quando fechar os parenteses dos parametros da função, zera o contador da
 				// posição do parametro
-			validarSeFoiInstanciado(token);
+			dizerSeFoiInstanciado(token);
 			param = 0;
 			break;
 		case 7: // quando fecha chaves, atualiza o escopo;
@@ -156,13 +143,32 @@ public class Semantico implements Constants {
 			break;
 
 		case 15:
+			inserirAssembly();
 			// fecha contexto
+			break;
+		case 16:
+			tipoContexto = TipoContexto.LEITURA;
+			break;
+		case 17:
+			tipoContexto = TipoContexto.ESCRITA;
+			// cout
 			break;
 		}
 		for (Symbol simbolo : tabela) {
 			simbolo.printSymbol();
 		}
 		System.out.println("\n\n");
+	}
+
+	private void inserirAssembly() {
+		switch (tipoContexto) {
+		case INICIALIZACAO:
+
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	/**
@@ -225,6 +231,17 @@ public class Semantico implements Constants {
 		}
 		return false;
 	}
+
+	private void dizerSeFoiInstanciado(Token token) {
+		boolean flag = true;
+		for (Symbol s : tabela) {
+			if (token.getLexeme() == s.getId() && s.getEscopo().equals(escopos.peek())) {
+				flag = false;
+			}
+		}
+		if (flag) {
+			System.out.println(token.getLexeme() + " utilizado sem estar instanciado");
+		}
+
+	}
 }
-// tabela.add(new Symbol(token.getLexeme(), tipo, true, tipo, true, GO_TO, true,
-// true));

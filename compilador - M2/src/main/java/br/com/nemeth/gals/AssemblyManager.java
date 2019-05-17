@@ -1,9 +1,18 @@
 package br.com.nemeth.gals;
 
 public class AssemblyManager {
-	StringBuilder data;
-	StringBuilder text;
+	private StringBuilder data;
+	private StringBuilder text;
+	private static AssemblyManager INSTANCE;
 
+	public synchronized static AssemblyManager getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new AssemblyManager();
+		}
+		return INSTANCE;
+	}
+
+	@Deprecated
 	public AssemblyManager() {
 		text = new StringBuilder();
 		text.append(".text \n");

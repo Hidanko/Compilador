@@ -8,7 +8,7 @@ SemanticName = Semantico
 Package = br.com.nemeth.gals
 ScannerCaseSensitive = true
 ScannerTable = Compact
-Input = String
+Input = Stream
 Parser = SLR
 #RegularDefinitions
 
@@ -84,6 +84,9 @@ LET = ID : "let"
 READ = ID : "read"
 WRITE = ID : "write"
 
+CIN = ID : "cin>>"
+COUT = ID : "cout<<"
+
 DEL_PT: ["."]
 DEL_VG: [","]
 DEL_PV: [";"]
@@ -139,17 +142,21 @@ ATRIBUICAO: ["="]
 <read>
 <write>
 <vet>
+<cin>
+<cout>
 #Grammar
 <prog> ::= PROGRAM <escopo>;
 
 <escopo> ::= ABRE_CHAVE <cmd_l> FECHA_CHAVE#7 | ABRE_CHAVE FECHA_CHAVE#7;
 
 <cmd_l> ::= <cmd> | <cmd_l> <cmd> ;
-<cmd> ::= <dec> | <se> | <while> | <dowhile> | <for> | <atrib> |  <read> | <write> | <func> | <cfunc> ;
+<cmd> ::= <dec> | <se> | <while> | <dowhile> | <for> | <atrib> |  <read> | <write> | <func> | <cfunc> | <cin> | <cout> ;
 
+<cin> ::= CIN 
+<cout> ::= COUT
 <read> ::= READ ABRE_PARENTESES ID#9 FECHA_PARENTESES DEL_PV;
 <write> ::= WRITE ABRE_PARENTESES <exp> FECHA_PARENTESES DEL_PV;
-<func> ::= <type>#1 FUNCTION ID#4 ABRE_PARENTESES <params> FECHA_PARENTESES#6 <escopo> |<type>#1 FUNCTION ID#4 ABRE_PARENTESES FECHA_PARENTESES <escopo>;
+<func> ::= <type>#1 FUNCTION ID#4 ABRE_PARENTESES <params> FECHA_PARENTESES#6 <escopo> #15 |<type>#1 FUNCTION ID#4 ABRE_PARENTESES FECHA_PARENTESES <escopo> #15;
 <cfunc> ::= ID#11 ABRE_PARENTESES <params2> FECHA_PARENTESES DEL_PV | ID#11 ABRE_PARENTESES FECHA_PARENTESES DEL_PV;
 <atrib> ::= ID#9 ATRIBUICAO <exp> DEL_PV;
 <dec> ::= <type>#1 <dec_n> DEL_PV;
