@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.swing.JFileChooser;
 
+import br.com.nemeth.gals.AssemblyManager;
 import br.com.nemeth.gals.LexicalError;
 import br.com.nemeth.gals.Lexico;
 import br.com.nemeth.gals.SemanticError;
@@ -234,12 +235,19 @@ public class TelaController {
 				variaveis.set(i, s);
 			}
 		}
-		
+
 		if (!achou) {
 			variaveis.add(s);
 		}
-		
+
 		tabVariaveis.setItems(FXCollections.observableArrayList(variaveis));
 	}
 
+	@FXML
+	public void gerarAssembly() {
+		String assembly = AssemblyManager.getInstance().getAssembly();
+		if (assembly != null) {
+			textOutput.setText(assembly);
+		}
+	}
 }

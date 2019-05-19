@@ -39,6 +39,7 @@
             </Label>
             <Button layoutX="80.0" layoutY="118.0" mnemonicParsing="false" onAction="#ler" prefHeight="25.0" prefWidth="86.0" text="Carregar" />
             <Button fx:id="buttonTabela" layoutX="14.0" layoutY="118.0" mnemonicParsing="false" onAction="#abrirTabela" text="Tabela" />
+            <Button layoutX="176.0" layoutY="118.0" mnemonicParsing="false" onAction="#gerarAssembly" prefHeight="25.0" prefWidth="121.0" text="Gerar Assembly" />
          </children>
       </Pane>
       <GridPane>
