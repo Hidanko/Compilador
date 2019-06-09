@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.com.nemeth.view.tabela.Tabela">
+   <children>
+      <TableView fx:id="tabela" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <columns>
+          <TableColumn fx:id="tabX" prefWidth="61.60003662109375" text="X" />
+          <TableColumn fx:id="tabInt" prefWidth="88.79998779296875" text="INT" />
+            <TableColumn fx:id="tabFloat" prefWidth="106.4000244140625" text="FLOAT" />
+            <TableColumn fx:id="tabChar" prefWidth="82.39996337890625" text="CHAR" />
+            <TableColumn fx:id="tabString" prefWidth="126.4000244140625" text="STRING" />
+            <TableColumn fx:id="tabBoolean" prefWidth="113.5999755859375" text="BOOLEAN" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>
