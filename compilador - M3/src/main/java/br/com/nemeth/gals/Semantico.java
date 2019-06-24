@@ -416,11 +416,16 @@ public class Semantico implements Constants {
 		case 34:
 			tabela.get(tabela.size() - 1).setTamanho(Integer.parseInt(token.getLexeme()));
 			break;
+		case 35:
+			System.out.println("inicio");
+			setFuncao(token);
+			break;
 		case 101:
 			verificaVariaveis(token);
+			gera_cod("RETURN", "0");
 			break;
 		case 100:
-			validaExpressao(token);
+			//validaExpressao(token);
 			break;
 		case 99:
 			this.vetorParâmetro = true;
@@ -433,7 +438,7 @@ public class Semantico implements Constants {
 			tip = null;
 			vetorDeclaracao = false;
 		case 96:
-			if (pos != tabela.get(funcaoAtiva).getTamanho()) {
+			if (pos < tabela.get(funcaoAtiva).getTamanho()) {
 				throw new SemanticError("Faltam parâmetros a serem declarados na função", token.getPosition());
 			}
 			pos = 0;
@@ -459,8 +464,7 @@ public class Semantico implements Constants {
 	public void setParametro(Token t) throws SemanticError {
 		for (Symbol i : tabela) {
 			if (i.getId().equals(t.getLexeme()) && i.getEscopo() == escoposFuncao.peek() + 1) {
-				throw new SemanticError(
-						"Não é possivel inserir novamente um parâmetro com o nome '" + i.getId() + "'",
+				throw new SemanticError("Não é possivel inserir novamente um parâmetro com o nome '" + i.getId() + "'",
 						t.getPosition());
 			}
 		}
@@ -471,7 +475,7 @@ public class Semantico implements Constants {
 		sim.setTipo(tip);
 		sim.setFuncao(funcaoAtiva);
 		tabela.add(sim);
-		tela.adicionarSymbol(sim, ""+sim.getEscopo());
+		tela.adicionarSymbol(sim, "" + sim.getEscopo());
 		tabela.get(funcaoAtiva).getParametro().add(new Parametro(tabela.size() - 1, tip));
 		tip = null;
 	}
@@ -487,7 +491,7 @@ public class Semantico implements Constants {
 		Symbol sim = new Symbol(t.getLexeme(), (int) escoposFuncao.peek());
 		sim.setTipo(tip);
 		tabela.add(sim);
-		tela.adicionarSymbol(sim, ""+sim.getEscopo());
+		tela.adicionarSymbol(sim, "" + sim.getEscopo());
 	}
 
 	// verifica e insere biblioteca
@@ -500,23 +504,27 @@ public class Semantico implements Constants {
 		Symbol sim = new Symbol(t.getLexeme(), (int) escoposFuncao.peek());
 		sim.setBiblio(true);
 		tabela.add(sim);
-		tela.adicionarSymbol(sim, ""+sim.getEscopo());
+		tela.adicionarSymbol(sim, "" + sim.getEscopo());
 	}
 
 	// verifica e insera função na tabela de simbolos
 	public void setFuncao(Token t) throws SemanticError {
 		for (Symbol i : tabela) {
 			if (i.getId().equals(t.getLexeme()) && i.isFunc()) {
-				throw new SemanticError("Função '" + i.getId() + "' possui mais de uma declaração",
-						t.getPosition());
+				throw new SemanticError("Função '" + i.getId() + "' possui mais de uma declaração", t.getPosition());
 			}
 		}
+		String nome = t.getLexeme();
+		if (!nome.equals("inicio")) {
+			gera_cod("JMP", "_inicio");
+		}
+		gera_cod("ROT", "_" + nome);
 		Symbol sim = new Symbol(t.getLexeme(), (int) escoposFuncao.peek());
 		sim.setTipo(tip);
 		sim.setFunc(true);
 		tip = null;
 		tabela.add(sim);
-		tela.adicionarSymbol(sim, ""+sim.getEscopo());
+		tela.adicionarSymbol(sim, "" + sim.getEscopo());
 		funcaoAtiva = tabela.size() - 1;
 	}
 
@@ -648,7 +656,7 @@ public class Semantico implements Constants {
 			sim.setVet(true);
 			sim.setTipo(tip);
 			tabela.add(sim);
-			tela.adicionarSymbol(sim, ""+sim.getEscopo());
+			tela.adicionarSymbol(sim, "" + sim.getEscopo());
 			vetorDeclaracao = false;
 			return;
 		} else if (vetorParâmetro) {
@@ -665,7 +673,7 @@ public class Semantico implements Constants {
 				sim.setTipo(tip);
 				sim.setFuncao(funcaoAtiva);
 				tabela.add(sim);
-				tela.adicionarSymbol(sim, ""+sim.getEscopo());
+				tela.adicionarSymbol(sim, "" + sim.getEscopo());
 				tabela.get(funcaoAtiva).getParametro().add(new Parametro(tabela.size() - 1, tip));
 			}
 
@@ -764,37 +772,41 @@ public class Semantico implements Constants {
 					throw new SemanticError("Tipo incompativel para atribuição da expressão com o uso da variável '"
 							+ t.getLexeme() + "' ", t.getPosition());
 				case WAR:
-					tela.addLinhaLog(
-							"Poderá haver perda de dados na atribuição da expressão com o uso da variável '"
-									+ t.getLexeme() + "' na posição" + t.getPosition() + "\n");
+					tela.addLinhaLog("Poderá haver perda de dados na atribuição da expressão com o uso da variável '"
+							+ t.getLexeme() + "' na posição" + t.getPosition() + "\n");
 					return OK_;
 				default:
 					tabela.get(indiceVariavel).setUsada(true);
 					return new SemanticTable().atribType((int) expressao.pop(), op2);
 				}
 			}
-			op1 = (int) expressao.pop();
-			if (op1 == -2) {
-				op1 = validaExpressao(t);
-			}
-			new SemanticTable();
-			result = SemanticTable.resultType(op1, op2, op);
-			switch (result) {
-			case ERR:
-				throw new SemanticError("Expressão em formato invalido no uso da variavel '" + t.getLexeme() + "' ",
-						t.getPosition());
+//			corrigir
+//			if (!expressao.empty()) {
+				op1 = (int) expressao.pop();
 
-			}
-			if ((int) expressao.peek() == -4) {
-				expressao.pop();
-				return result;
-			}
-			expressao.push(result);
-			if (expressao.size() == 1) {
-				return OK_;
+				if (op1 == -2) {
+					op1 = validaExpressao(t);
 
+				}
+				new SemanticTable();
+				result = SemanticTable.resultType(op1, op2, op);
+				switch (result) {
+				case ERR:
+					throw new SemanticError("Expressão em formato invalido no uso da variavel '" + t.getLexeme() + "' ",
+							t.getPosition());
+
+				}
+				if ((int) expressao.peek() == -4) {
+					expressao.pop();
+					return result;
+				}
+				expressao.push(result);
+				if (expressao.size() == 1) {
+					return OK_;
+
+				}
 			}
-		}
+//		}
 	}
 
 	public void verificaVariaveis(Token t) throws SemanticError {
