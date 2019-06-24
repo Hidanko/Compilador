@@ -88,7 +88,7 @@ public class TelaController {
 	private TableColumn<Symbol, String> tabFunc;
 
 	private List<Symbol> variaveis = new ArrayList<Symbol>();
-
+	Semantico sem;
 	@FXML
 	public void initialize() {
 
@@ -121,7 +121,7 @@ public class TelaController {
 		textOutput.setText("");
 		Lexico lex = new Lexico();
 		Sintatico sin = new Sintatico();
-		Semantico sem = new Semantico(this);
+		sem = new Semantico(this);
 
 		lex.setInput(texto);
 
@@ -230,7 +230,7 @@ public class TelaController {
 	public void adicionarSymbol(Symbol s, String escopo) {
 		boolean achou = false;
 		for (int i = 0; i < variaveis.size(); i++) {
-			if (variaveis.get(i).getId().equals(s.getId()) && variaveis.get(i).getEscopo().equals(escopo)) {
+			if (variaveis.get(i).getId().equals(s.getId()) && variaveis.get(i).getEscopo() == (new Integer(escopo))) {
 				achou = true;
 				variaveis.set(i, s);
 			}
@@ -245,7 +245,7 @@ public class TelaController {
 
 	@FXML
 	public void gerarAssembly() {
-		String assembly = AssemblyManager.getInstance().getAssembly();
+		String assembly = sem.getAssembly();
 		if (assembly != null) {
 			textOutput.setText(assembly);
 		}
