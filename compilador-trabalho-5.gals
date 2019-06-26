@@ -5,10 +5,10 @@ Language = Java
 ScannerName = Lexico
 ParserName = Sintatico
 SemanticName = Semantico
-Package = GalsResult
+Package = br.com.nemeth.gals
 ScannerCaseSensitive = true
 ScannerTable = Compact
-Input = Stream
+Input = String
 Parser = SLR
 #RegularDefinitions
 V : [a-zA-Z_][a-zA-Z_0-9·‡‚„ÈËÍÌÔÛÙıˆ˙ÁÒ¡¿¬√…»Õœ”‘’÷⁄«—]*
@@ -174,7 +174,7 @@ EOD : ";"
 <cham_func>
 
 #Grammar
-<prog> ::= PROGRAMA CHLE#0 <biblioteca> <funcoes> CHLD |  PROGRAMA CHLE#0 <funcoes> CHLD#101#102;
+<prog> ::= PROGRAMA CHLE#0 <biblioteca> <funcoes> CHLD |  PROGRAMA CHLE#0 <funcoes> CHLD;
 
 <biblioteca> ::= <importacao> <biblioteca> | <importacao>;
 
@@ -186,7 +186,7 @@ EOD : ";"
              FUNCAO ID#5 PLE <parametros> PLD#98 CHLE#0 <corpo> CHLD#101 | FUNCAO  ID#5 PLE <parametros> PLD#98 CHLE#0 CHLD#101 | 
 	    FUNCAO  <tipo>#1 ID#5 PLE <parametros> PLD#98 CHLE#0 <corpo_com_retorno> CHLD#101 |FUNCAO  <tipo>#1 ID#5 PLE PLD CHLE#0 <corpo_com_retorno> CHLD#101 ;
 
-<begin>::=  FUNCAO INICIO PLE PLD CHLE#0 <corpo> CHLD#101 | FUNCAO INICIO PLE PLD CHLE#0 CHLD#101;
+<begin>::=  FUNCAO INICIO#35 PLE PLD CHLE#0 <corpo> CHLD#101 | FUNCAO INICIO#35 PLE PLD CHLE#0 CHLD#102;
 
 <parametros>::= <tipo>#1 <id_func> VIRGULA <parametros> | <tipo>#1 <id_func>#97;
 

@@ -34,6 +34,9 @@ public class Semantico implements Constants {
 
 	Integer tipo = null, funcaoAtiva = null, idChamFuncao = null;
 	boolean vetorDeclaracao = false, vetorParâmetro = false;
+	
+	List<String> nomeFuncao = new ArrayList<String>();
+	Integer contpar;
 
 	public Semantico(TelaController tela) {
 		this.param = 0;
@@ -85,6 +88,14 @@ public class Semantico implements Constants {
 			return "";
 		}
 
+	}
+	
+	private String getParname(String nome_call, int cont) {
+		for (Symbol s : tabela) {
+			
+		}
+		
+		return "";
 	}
 
 	public void executacaGeracaoAssembly(int a, String token) throws SemanticError {
@@ -316,9 +327,14 @@ public class Semantico implements Constants {
 			break;
 		case 8:
 			chamadaDeFunc(token);
+			contpar = 0;
+			nomeFuncao.add(token.getLexeme());
 			break;
 		case 9:
 			idParametroDeChamadaDeFuncao(token);
+			gera_cod ("LD", token.getLexeme()); // ver se é valor ou id
+			gera_cod ("STO", getParname(nome_call, contpar);
+			contpar++;
 			break;
 		case 10:
 			idVetor(token);
@@ -425,7 +441,7 @@ public class Semantico implements Constants {
 			gera_cod("RETURN", "0");
 			break;
 		case 100:
-			//validaExpressao(token);
+//			validaExpressao(token);
 			break;
 		case 99:
 			this.vetorParâmetro = true;
@@ -441,11 +457,12 @@ public class Semantico implements Constants {
 			if (pos < tabela.get(funcaoAtiva).getTamanho()) {
 				throw new SemanticError("Faltam parâmetros a serem declarados na função", token.getPosition());
 			}
+			gera_cod("CALL", "_"+nomeFuncao.get(funcaoAtiva));
 			pos = 0;
 			idChamFuncao = funcaoAtiva;
 			funcaoAtiva = null;
 		case 102:
-			getAssembly();
+			//verificaVariaveis(token);
 			break;
 		default:
 			executacaGeracaoAssembly(action, token.getLexeme());
